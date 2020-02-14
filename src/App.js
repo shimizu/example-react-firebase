@@ -1,54 +1,30 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
 
-import firebase from "firebase";
-import { firebaseConfig } from './firebase/config';
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
-import  Hello  from "./page/login";
-import  HelloSomeone  from "./page/hellowsomeone";
+import LoginEntry from './login';
+import Page1 from './page/page1';
 
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch
-} from 'react-router-dom';
-
-//firebase初期化
-firebase.initializeApp(firebaseConfig);
-
-// Configure FirebaseUI.
-const uiConfig = {
-  // Popup signin flow rather than redirect flow.
-  signInFlow: 'popup',
-  // Redirect to /signedIn after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
-  signInSuccessUrl: '/signedIn',
-  // We will display Google and Facebook as auth providers.
-  signInOptions: [
-    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-    firebase.auth.FacebookAuthProvider.PROVIDER_ID
-  ]
-};
-
-
-
-
-
-
+import firebase from './firebase';
 
 function App() {
-  return (
-    <Router>
-      <Switch>
-        <Route path="/" exact>
-          <Hello />
-        </Route>
-        <Route path="/hello/:name" exact>
-          <HelloSomeone />
-        </Route>
-      </Switch>
-    </Router>
-  );
+	const [ authed, setAuthed ] = useState();
+
+	firebase.auth().onAuthStateChanged((user) => {
+		setAuthed(user);
+	});
+
+	if (!authed) {
+		return <LoginEntry />;
+	}
+	return (
+		<Router>
+			<Switch>
+				<Route path="/" component={Page1} />
+			</Switch>
+		</Router>
+	);
 }
 
 export default App;
